@@ -1,0 +1,131 @@
+# web
+stock website 
+npx create-next-app@latest my-landing-page --typescript
+cd my-landing-page
+npm install tailwindcss@latest postcss@latest autoprefixer@latest
+npm install shadcn/ui framer-motion
+npx tailwindcss init -p
+module.exports = {
+  content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
+  darkMode: 'class',
+  theme: { extend: {} },
+  plugins: [],
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html { scroll-behavior: smooth; }
+body.dark { background-color: #1a202c; }
+import Image from 'next/image'
+import { motion } from 'framer-motion'
+
+interface HeroProps { title: string; subtitle: string; bgImage: string }
+
+export default function Hero({ title, subtitle, bgImage }: HeroProps) {
+  return (
+    <div className="relative h-screen flex items-center justify-center bg-gray-900 overflow-hidden">
+      <Image src={bgImage} alt="" layout="fill" objectFit="cover" className="opacity-30" priority />
+      <motion.div
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="text-center px-4"
+      >
+        <h1 className="text-5xl font-extrabold text-white">{title}</h1>
+        <p className="mt-4 text-xl text-gray-200">{subtitle}</p>
+        <a
+          href="#download"
+          className="mt-8 inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+        >
+          立即下載
+        </a>
+      </motion.div>
+    </div>
+  )
+}
+interface FeatureCardProps { icon: string; title: string; desc: string }
+
+export default function FeatureCard({ icon, title, desc }: FeatureCardProps) {
+  return (
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition">
+      <div className="text-4xl">{icon}</div>
+      <h3 className="mt-4 text-2xl font-semibold">{title}</h3>
+      <p className="mt-2 text-gray-600 dark:text-gray-300">{desc}</p>
+    </div>
+  )
+}
+export default function DownloadSection() {
+  const platforms = [
+    { name: 'Windows', file: 'AIStockSystem.exe' },
+    { name: 'macOS',   file: 'AIStockSystem.dmg' },
+    { name: 'Linux',   file: 'AIStockSystem.AppImage' },
+    { name: 'iOS',     file: 'AIStockSystem.ipa' },
+    { name: 'Android', file: 'AIStockSystem.apk' },
+  ]
+
+  return (
+    <section id="download" className="py-16 bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto text-center">
+        <h2 className="text-3xl font-bold">跨平台下載</h2>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
+          支援 Windows、macOS、Linux、iOS、Android
+        </p>
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          {platforms.map((p) => (
+            <a
+              key={p.name}
+              href={`/downloads/${p.file}`}
+              download
+              className="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition flex items-center justify-center"
+            >
+              {p.name}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+export default function Footer() {
+  return (
+    <footer className="py-8 bg-gray-800 text-gray-400 text-center">
+      © 2025 YourName. All rights reserved.
+    </footer>
+  )
+}
+import Hero from '@/components/Hero'
+import FeatureCard from '@/components/FeatureCard'
+import DownloadSection from '@/components/DownloadSection'
+import Footer from '@/components/Footer'
+
+export default function Home() {
+  return (
+    <>
+      <Hero
+        title="AI 股票與加密貨幣分析系統"
+        subtitle="科技感十足，GitHub 俐落設計，跨平台一鍵下載"
+        bgImage="/ai-hero.png"
+      />
+
+      <section className="max-w-6xl mx-auto py-16 grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+        {[
+          { icon: '⚙️', title: '多模型 & 深度學習', desc: 'VotingClassifier + LSTM，準確率 > 80%' },
+          { icon: '🌐', title: '即時圖表整合', desc: 'TradingView & TopOne 雙重展示' },
+          { icon: '📰', title: '智慧事件分析', desc: 'GPT 事件邏輯 + 地緣風險' },
+        ].map((f, i) => (
+          <FeatureCard key={i} {...f} />
+        ))}
+      </section>
+
+      <DownloadSection />
+
+      <Footer />
+    </>
+  )
+}
+from image_gen import text2im
+text2im({
+  "prompt":"A futuristic AI dashboard with neon accents and stock charts",
+  "size":"1024x512",
+  "n":1
+})
