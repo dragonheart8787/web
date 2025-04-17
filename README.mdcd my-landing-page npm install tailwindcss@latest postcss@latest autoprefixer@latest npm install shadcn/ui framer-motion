@@ -1,21 +1,53 @@
-# web
-stock website 
-npx create-next-app@latest my-landing-page --typescript
-cd my-landing-page
-npm install tailwindcss@latest postcss@latest autoprefixer@latest
-npm install shadcn/ui framer-motion
-npx tailwindcss init -p
+```bash
+
+
+---
+
+## 1. package.json
+```json
+{
+  "name": "my-landing-page",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.0.0",
+    "autoprefixer": "^10.0.0",
+    "postcss": "^8.0.0",
+    "framer-motion": "^6.0.0",
+    "shadcn-ui": "^1.0.0"
+  }
+}
+```
+
+## 2. tailwind.config.js
+```js
 module.exports = {
   content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   darkMode: 'class',
   theme: { extend: {} },
   plugins: [],
 }
+```
+
+## 3. styles/globals.css
+```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 html { scroll-behavior: smooth; }
 body.dark { background-color: #1a202c; }
+```
+
+## 4. components/Hero.tsx
+```tsx
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 
@@ -24,7 +56,7 @@ interface HeroProps { title: string; subtitle: string; bgImage: string }
 export default function Hero({ title, subtitle, bgImage }: HeroProps) {
   return (
     <div className="relative h-screen flex items-center justify-center bg-gray-900 overflow-hidden">
-      <Image src={bgImage} alt="" layout="fill" objectFit="cover" className="opacity-30" priority />
+      <Image src={bgImage} alt="" fill style={{ objectFit: 'cover', opacity: 0.3 }} priority />
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -33,16 +65,17 @@ export default function Hero({ title, subtitle, bgImage }: HeroProps) {
       >
         <h1 className="text-5xl font-extrabold text-white">{title}</h1>
         <p className="mt-4 text-xl text-gray-200">{subtitle}</p>
-        <a
-          href="#download"
-          className="mt-8 inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-        >
+        <a href="#download" className="mt-8 inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
           立即下載
         </a>
       </motion.div>
     </div>
   )
 }
+```
+
+## 5. components/FeatureCard.tsx
+```tsx
 interface FeatureCardProps { icon: string; title: string; desc: string }
 
 export default function FeatureCard({ icon, title, desc }: FeatureCardProps) {
@@ -54,6 +87,10 @@ export default function FeatureCard({ icon, title, desc }: FeatureCardProps) {
     </div>
   )
 }
+```
+
+## 6. components/DownloadSection.tsx
+```tsx
 export default function DownloadSection() {
   const platforms = [
     { name: 'Windows', file: 'AIStockSystem.exe' },
@@ -86,6 +123,10 @@ export default function DownloadSection() {
     </section>
   )
 }
+```
+
+## 7. components/Footer.tsx
+```tsx
 export default function Footer() {
   return (
     <footer className="py-8 bg-gray-800 text-gray-400 text-center">
@@ -93,6 +134,10 @@ export default function Footer() {
     </footer>
   )
 }
+```
+
+## 8. pages/index.tsx
+```tsx
 import Hero from '@/components/Hero'
 import FeatureCard from '@/components/FeatureCard'
 import DownloadSection from '@/components/DownloadSection'
@@ -123,9 +168,43 @@ export default function Home() {
     </>
   )
 }
-from image_gen import text2im
-text2im({
-  "prompt":"A futuristic AI dashboard with neon accents and stock charts",
-  "size":"1024x512",
-  "n":1
-})
+```
+
+## 9. next.config.js
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: '**' }
+    ],
+  },
+}
+
+module.exports = nextConfig
+```
+
+## 10. README.md
+```markdown
+# My Landing Page
+
+一個使用 Next.js + Tailwind CSS + Framer Motion 打造的科技感落地頁，支援跨平台下載。
+
+## 開發
+
+```bash
+npm install
+npm run dev
+```
+
+## 建置與部署
+
+```bash
+npm run build
+npm run start
+```
+
+部署到 Vercel：一鍵連結 GitHub，零設定完成部署。
+```
+
