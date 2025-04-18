@@ -2,6 +2,50 @@
 
 
 ---
+# .github/workflows/deploy.yml
+
+name: CI / CD to Vercel
+
+on:
+  push:
+    branches:
+      - main   # 主分支推送即部署
+  pull_request:
+    types: [opened, synchronize, reopened]  # PR 時也觸發 Preview 部署
+
+jobs:
+  build_and_deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 檢出程式碼
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. 安裝 Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 3. 安裝專案依賴
+      - name: Install Dependencies
+        run: npm install  # 或 yarn install :contentReference[oaicite:0]{index=0}
+
+      # 4. 建置 Next.js 應用
+      - name: Build Application
+        run: npm run build  # 需在 package.json 定義 "build": "next build" :contentReference[oaicite:1]{index=1}
+
+      # 5. 呼叫 Vercel Action 部署
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20  # Vercel 官方 GitHub Action :contentReference[oaicite:2]{index=2}
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}           # 在 GitHub Secrets 設定你的 Vercel Token
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}         # Vercel 組織 ID，可從 Vercel Dashboard 取得
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # Vercel 專案 ID
+          working-directory: ./                               # 指定工作目錄（預設為 repo 根） :contentReference[oaicite:3]{index=3}
+          prod-branch: main                                   # 只有 main 分支才推送至 Production :contentReference[oaicite:4]{index=4}
 
 ## 1. package.json
 ```json
