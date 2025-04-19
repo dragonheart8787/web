@@ -1,106 +1,22 @@
-```bash
-
-
----
-# .github/workflows/deploy.yml
-
-name: CI / CD to Vercel
-
-on:
-  push:
-    branches:
-      - main   # 主分支推送即部署
-  pull_request:
-    types: [opened, synchronize, reopened]  # PR 時也觸發 Preview 部署
-
-jobs:
-  build_and_deploy:
-    name: Build & Deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      # 1. 檢出程式碼
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      # 2. 安裝 Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      # 3. 安裝專案依賴
-      - name: Install Dependencies
-        run: npm install  # 或 yarn install :contentReference[oaicite:0]{index=0}
-
-      # 4. 建置 Next.js 應用
-      - name: Build Application
-        run: npm run build  # 需在 package.json 定義 "build": "next build" :contentReference[oaicite:1]{index=1}
-
-      # 5. 呼叫 Vercel Action 部署
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20  # Vercel 官方 GitHub Action :contentReference[oaicite:2]{index=2}
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}           # 在 GitHub Secrets 設定你的 Vercel Token
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}         # Vercel 組織 ID，可從 Vercel Dashboard 取得
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # Vercel 專案 ID
-          working-directory: ./                               # 指定工作目錄（預設為 repo 根） :contentReference[oaicite:3]{index=3}
-          prod-branch: main                                   # 只有 main 分支才推送至 Production :contentReference[oaicite:4]{index=4}
-
-## 1. package.json
-```json
-{
-  "name": "my-landing-page",
-  "version": "1.0.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "tailwindcss": "^3.0.0",
-    "autoprefixer": "^10.0.0",
-    "postcss": "^8.0.0",
-    "framer-motion": "^6.0.0",
-    "shadcn-ui": "^1.0.0"
-  }
-}
-```
-
-## 2. tailwind.config.js
-```js
-module.exports = {
-  content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
-  darkMode: 'class',
-  theme: { extend: {} },
-  plugins: [],
-}
-```
-
-## 3. styles/globals.css
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-html { scroll-behavior: smooth; }
-body.dark { background-color: #1a202c; }
-```
-
-## 4. components/Hero.tsx
-```tsx
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 
-interface HeroProps { title: string; subtitle: string; bgImage: string }
+interface HeroProps {
+  title: string
+  subtitle: string
+  bgImage: string
+}
 
 export default function Hero({ title, subtitle, bgImage }: HeroProps) {
   return (
     <div className="relative h-screen flex items-center justify-center bg-gray-900 overflow-hidden">
-      <Image src={bgImage} alt="" fill style={{ objectFit: 'cover', opacity: 0.3 }} priority />
+      <Image
+        src={bgImage}
+        alt=""
+        fill
+        style={{ objectFit: 'cover', opacity: 0.3 }}
+        priority
+      />
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -109,146 +25,13 @@ export default function Hero({ title, subtitle, bgImage }: HeroProps) {
       >
         <h1 className="text-5xl font-extrabold text-white">{title}</h1>
         <p className="mt-4 text-xl text-gray-200">{subtitle}</p>
-        <a href="#download" className="mt-8 inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+        <a
+          href="#download"
+          className="mt-8 inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+        >
           立即下載
         </a>
       </motion.div>
     </div>
   )
 }
-```
-
-## 5. components/FeatureCard.tsx
-```tsx
-interface FeatureCardProps { icon: string; title: string; desc: string }
-
-export default function FeatureCard({ icon, title, desc }: FeatureCardProps) {
-  return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition">
-      <div className="text-4xl">{icon}</div>
-      <h3 className="mt-4 text-2xl font-semibold">{title}</h3>
-      <p className="mt-2 text-gray-600 dark:text-gray-300">{desc}</p>
-    </div>
-  )
-}
-```
-
-## 6. components/DownloadSection.tsx
-```tsx
-export default function DownloadSection() {
-  const platforms = [
-    { name: 'Windows', file: 'AIStockSystem.exe' },
-    { name: 'macOS',   file: 'AIStockSystem.dmg' },
-    { name: 'Linux',   file: 'AIStockSystem.AppImage' },
-    { name: 'iOS',     file: 'AIStockSystem.ipa' },
-    { name: 'Android', file: 'AIStockSystem.apk' },
-  ]
-
-  return (
-    <section id="download" className="py-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl font-bold">跨平台下載</h2>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          支援 Windows、macOS、Linux、iOS、Android
-        </p>
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {platforms.map((p) => (
-            <a
-              key={p.name}
-              href={`/downloads/${p.file}`}
-              download
-              className="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition flex items-center justify-center"
-            >
-              {p.name}
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-```
-
-## 7. components/Footer.tsx
-```tsx
-export default function Footer() {
-  return (
-    <footer className="py-8 bg-gray-800 text-gray-400 text-center">
-      © 2025 YourName. All rights reserved.
-    </footer>
-  )
-}
-```
-
-## 8. pages/index.tsx
-```tsx
-import Hero from '@/components/Hero'
-import FeatureCard from '@/components/FeatureCard'
-import DownloadSection from '@/components/DownloadSection'
-import Footer from '@/components/Footer'
-
-export default function Home() {
-  return (
-    <>
-      <Hero
-        title="AI 股票與加密貨幣分析系統"
-        subtitle="科技感十足，GitHub 俐落設計，跨平台一鍵下載"
-        bgImage="/ai-hero.png"
-      />
-
-      <section className="max-w-6xl mx-auto py-16 grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
-        {[
-          { icon: '⚙️', title: '多模型 & 深度學習', desc: 'VotingClassifier + LSTM，準確率 > 80%' },
-          { icon: '🌐', title: '即時圖表整合', desc: 'TradingView & TopOne 雙重展示' },
-          { icon: '📰', title: '智慧事件分析', desc: 'GPT 事件邏輯 + 地緣風險' },
-        ].map((f, i) => (
-          <FeatureCard key={i} {...f} />
-        ))}
-      </section>
-
-      <DownloadSection />
-
-      <Footer />
-    </>
-  )
-}
-```
-
-## 9. next.config.js
-```js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: '**' }
-    ],
-  },
-}
-
-module.exports = nextConfig
-```
-
-## 10. README.md
-```markdown
-# My Landing Page
-
-一個使用 Next.js + Tailwind CSS + Framer Motion 打造的科技感落地頁，支援跨平台下載。
-
-## 開發
-
-```bash
-npm install
-npm run dev
-```
-
-## 建置與部署
-
-```bash
-npm run build
-npm run start
-```
-
-部署到 Vercel：一鍵連結 GitHub，零設定完成部署。
-```
-
